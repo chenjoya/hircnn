@@ -1,0 +1,7 @@
+*.pth
+100doh/
+__pycache__/
+*.jpg
+outputs/
+*.mp4
+mp4s/

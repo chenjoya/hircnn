@@ -1,0 +1,64 @@
+{
+    // 使用 IntelliSense 了解相关属性。 
+    // 悬停以查看现有属性的描述。
+    // 欲了解更多信息，请访问: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Python: Current File",
+            "type": "python",
+            "request": "launch",
+            "program": "${file}",
+            "console": "integratedTerminal",
+            "justMyCode": true
+        },
+        {
+            "name": "debug",
+            "type": "python",
+            "request": "launch",
+            "program": "${file}",
+            "console": "integratedTerminal",
+            "justMyCode": true,
+            "env": {
+                "CUDA_VISIBLE_DEVICES": "5"
+            },
+            "args": [
+                "--batch-size",
+                "4",
+                "--weights",
+                "FasterRCNN_ResNet50_FPN_V2_Weights.DEFAULT"
+            ]
+            // CUDA_VISIBLE_DEVICES=6,7 torchrun --nproc_per_node=2 train.py --batch-size 8 --weights FasterRCNN_ResNet50_FPN_V2_Weights.DEFAULT --sync-bn --amp --output-dir outputs/bs2x8_syncbn_amp > outputs/bs2x8_syncbn_amp/log.txt
+            // CUDA_VISIBLE_DEVICES=2,3 torchrun --rdzv_backend=c10d --rdzv_endpoint=localhost:0 --nproc_per_node=2 train.py --batch-size 16 --weights FasterRCNN_ResNet50_FPN_V2_Weights.DEFAULT --sync-bn --amp --output-dir outputs/bs2x16_syncbn_amp > outputs/bs2x16_syncbn_amp/log.txt
+            // CUDA_VISIBLE_DEVICES=0,5 torchrun --rdzv_backend=c10d --rdzv_endpoint=localhost:0 --nproc_per_node=2 train.py --batch-size 16 --lr 0.001 --epochs 8 --lr-steps 5 7 --weights FasterRCNN_ResNet50_FPN_V2_Weights.DEFAULT --sync-bn --amp --output-dir outputs/bs2x16_syncbn_amp > outputs/bs2x16_lr1e-3_578e_syncbn_amp/log.txt
+            // torchrun --nproc_per_node=8 train.py --batch-size 32 --test-only --sync-bn --amp --resume outputs/ms_bs2x16_lr1e-2_12e_syncbn_amp/model_11.pth
+            // CUDA_VISIBLE_DEVICES=6,7 torchrun --rdzv_backend=c10d --rdzv_endpoint=localhost:0 --nproc_per_node=2 train.py --trainable-backbone-layers 1 --batch-size 16 --weights FasterRCNN_ResNet50_FPN_V2_Weights.DEFAULT --sync-bn --amp --output-dir outputs/trainb1_bs2x16_syncbn_amp > outputs/trainb1_bs2x16_syncbn_amp/log.txt
+            // CUDA_VISIBLE_DEVICES=0,2,3,5 torchrun --rdzv_backend=c10d --rdzv_endpoint=localhost:0 --nproc_per_node=4 train.py --batch-size 16 --epochs 8 --lr-steps 5 7 --weights FasterRCNN_ResNet50_FPN_V2_Weights.DEFAULT --sync-bn --amp --output-dir outputs/bs4x16_syncbn_amp > outputs/bs4x16_578e_syncbn_amp/log.txt
+            // CUDA_VISIBLE_DEVICES=6,7 torchrun --rdzv_backend=c10d --rdzv_endpoint=localhost:0 --nproc_per_node=2 train.py --batch-size 16 --lr 0.01 --weights FasterRCNN_ResNet50_FPN_V2_Weights.DEFAULT --sync-bn --amp --output-dir outputs/ms_bs2x16_syncbn_amp > outputs/bs2x16_syncbn_amp/log.txt
+        },
+        {
+            "name": "eval",
+            "type": "python",
+            "request": "launch",
+            "program": "${file}",
+            "console": "integratedTerminal",
+            "justMyCode": true,
+            "args": [
+                "--batch-size",
+                "32",
+                "--test-only",
+                "--sync-bn",
+                "--amp",
+                "--resume",
+                "outputs/ms_bs2x16_lr1e-2_12e_syncbn_amp/model_11.pth"
+            ]
+            // CUDA_VISIBLE_DEVICES=6,7 torchrun --nproc_per_node=2 train.py --batch-size 8 --weights FasterRCNN_ResNet50_FPN_V2_Weights.DEFAULT --sync-bn --amp --output-dir outputs/bs2x8_syncbn_amp > outputs/bs2x8_syncbn_amp/log.txt
+            // CUDA_VISIBLE_DEVICES=2,3 torchrun --rdzv_backend=c10d --rdzv_endpoint=localhost:0 --nproc_per_node=2 train.py --batch-size 16 --weights FasterRCNN_ResNet50_FPN_V2_Weights.DEFAULT --sync-bn --amp --output-dir outputs/bs2x16_syncbn_amp > outputs/bs2x16_syncbn_amp/log.txt
+            // CUDA_VISIBLE_DEVICES=0,5 torchrun --rdzv_backend=c10d --rdzv_endpoint=localhost:0 --nproc_per_node=2 train.py --batch-size 16 --lr 0.001 --epochs 8 --lr-steps 5 7 --weights FasterRCNN_ResNet50_FPN_V2_Weights.DEFAULT --sync-bn --amp --output-dir outputs/bs2x16_syncbn_amp > outputs/bs2x16_lr1e-3_578e_syncbn_amp/log.txt
+            // torchrun --nproc_per_node=8 train.py --batch-size 32 --test-only --sync-bn --amp --resume outputs/ms_bs2x16_lr1e-2_12e_syncbn_amp/model_11.pth
+            // CUDA_VISIBLE_DEVICES=6,7 torchrun --rdzv_backend=c10d --rdzv_endpoint=localhost:0 --nproc_per_node=2 train.py --trainable-backbone-layers 1 --batch-size 16 --weights FasterRCNN_ResNet50_FPN_V2_Weights.DEFAULT --sync-bn --amp --output-dir outputs/trainb1_bs2x16_syncbn_amp > outputs/trainb1_bs2x16_syncbn_amp/log.txt
+            // CUDA_VISIBLE_DEVICES=0,2,3,5 torchrun --rdzv_backend=c10d --rdzv_endpoint=localhost:0 --nproc_per_node=4 train.py --batch-size 16 --epochs 8 --lr-steps 5 7 --weights FasterRCNN_ResNet50_FPN_V2_Weights.DEFAULT --sync-bn --amp --output-dir outputs/bs4x16_syncbn_amp > outputs/bs4x16_578e_syncbn_amp/log.txt
+            // CUDA_VISIBLE_DEVICES=6,7 torchrun --rdzv_backend=c10d --rdzv_endpoint=localhost:0 --nproc_per_node=2 train.py --batch-size 16 --lr 0.01 --weights FasterRCNN_ResNet50_FPN_V2_Weights.DEFAULT --sync-bn --amp --output-dir outputs/ms_bs2x16_syncbn_amp > outputs/bs2x16_syncbn_amp/log.txt
+        }
+    ]
+}
