@@ -64,24 +64,31 @@ if __name__ == '__main__':
     ).cuda()
     hircnn.eval()
 
-    # init video capture and writter
-    cap = cv2.VideoCapture('input.mp4')
-    writer = cv2.VideoWriter(
-        'output.mp4', 
-        cv2.VideoWriter_fourcc(*'mp4v'),
-        # fps, (w, h) 
-        round(cap.get(5)), (int(cap.get(3)), int(cap.get(4)))
-    )
-
-    # visualize font
+    # font for visualize
     font = ImageFont.truetype('times_b.ttf', size=30)
 
-    # read a frame
-    ret, frame = cap.read()
-    while ret:
+    # example: hand interaction detection, by video capture and write
+    if True:
+        cap = cv2.VideoCapture('input.mp4')
+        writer = cv2.VideoWriter(
+            'output.mp4', 
+            cv2.VideoWriter_fourcc(*'mp4v'),
+            # fps, (w, h) 
+            round(cap.get(5)), (int(cap.get(3)), int(cap.get(4)))
+        )
+
+        # read a frame
+        ret, frame = cap.read()
+        while ret:
+            boxes, states, scores = hircnn(frame)
+            vis = visualize(frame, boxes, states, scores, font)
+            writer.write(cv2.cvtColor(np.array(vis), cv2.COLOR_RGB2BGR))
+            ret, frame = cap.read() 
+        writer.release()
+        cap.release()
+    # example: hand interaction detection, by image read and save
+    else:
+        image = cv2.imread('input.jpg')
         boxes, states, scores = hircnn(frame)
         vis = visualize(frame, boxes, states, scores, font)
-        writer.write(cv2.cvtColor(np.array(vis), cv2.COLOR_RGB2BGR))
-        ret, frame = cap.read() 
-    writer.release()
-    cap.release()
+        cv2.imwrite('output.jpg', cv2.cvtColor(np.array(vis), cv2.COLOR_RGB2BGR))
