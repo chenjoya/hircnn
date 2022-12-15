@@ -1,4 +1,5 @@
-import torch
+import torch, cv2, json
+import numpy as np
 from PIL import Image, ImageDraw, ImageFont
 from torchvision import transforms as T
 from torchvision.models import detection
@@ -6,8 +7,8 @@ from torchvision.models import detection
 class HandStateRCNN(torch.nn.Module):
     def __init__(self, 
         model='fasterrcnn_resnet50_fpn_v2', 
-        weights='hsrcnn/outputs/ms_bs2x16_lr1e-2_12e_syncbn_amp/model_11.pth',
-        box_score_thresh=0.5,
+        weights='hircnn/outputs/ms_bs2x16_lr1e-2_12e_syncbn_amp/model_11.pth',
+        box_score_thresh=0.7,
         box_detections_per_img=2):
         super().__init__()
         model = getattr(detection, model)(
@@ -54,26 +55,31 @@ def visualize(image, boxes, states, scores, font):
     image = Image.fromarray(cv2.cvtColor(image, cv2.COLOR_BGR2RGB))
     return draw_box_masks(image, boxes.round().int().tolist(), labels, colors, font)
 
+# NOTE: usage demo. to detect hand interaction in a video
 if __name__ == '__main__':
-    hsrcnn = HandStateRCNN(weights='outputs/ms_bs2x16_lr1e-2_12e_syncbn_amp/model_11.pth', box_score_thresh=0.7, box_detections_per_img=10).cuda()
-    hsrcnn.eval()
+    # define network
+    hircnn = HandStateRCNN(
+        weights='outputs/ms_bs2x16_lr1e-2_12e_syncbn_amp/model_11.pth', 
+        box_score_thresh=0.7, box_detections_per_img=10
+    ).cuda()
+    hircnn.eval()
+
+    # init video capture and writter
+    cap = cv2.VideoCapture('input.mp4')
+    writer = cv2.VideoWriter(
+        'output.mp4', 
+        cv2.VideoWriter_fourcc(*'mp4v'),
+        # fps, (w, h) 
+        round(cap.get(5)), (int(cap.get(3)), int(cap.get(4)))
+    )
+
+    # visualize font
     font = ImageFont.truetype('times_b.ttf', size=30)
-    import cv2, json
-    import numpy as np
-    # test_annos = json.load(open('100doh/hs_100doh_test.json'))
-    # for test_anno in test_annos:
-    #     image = cv2.imread(test_anno['image'])
-    #     boxes, states, scores = hsrcnn(image)
-    #     visualize(image, boxes, states, scores, font)
-    #     pass
-    
-    cap = cv2.VideoCapture('microwave.mp4')
-    fourcc = cv2.VideoWriter_fourcc(*'mp4v')
-    writer = cv2.VideoWriter("microwave_result.mp4", fourcc, round(cap.get(5)), (int(cap.get(3)), int(cap.get(4))))
+
+    # read a frame
     ret, frame = cap.read()
     while ret:
-        # print()
-        boxes, states, scores = hsrcnn(frame)
+        boxes, states, scores = hircnn(frame)
         vis = visualize(frame, boxes, states, scores, font)
         writer.write(cv2.cvtColor(np.array(vis), cv2.COLOR_RGB2BGR))
         ret, frame = cap.read() 
