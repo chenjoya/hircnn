@@ -89,6 +89,7 @@ if __name__ == '__main__':
     # example: hand interaction detection, by image read and save
     else:
         image = cv2.imread('input.jpg')
-        boxes, states, scores = hircnn(frame)
-        vis = visualize(frame, boxes, states, scores, font)
+        boxes, states, scores = hircnn(image)
+        vis = visualize(image, boxes, states, scores, font)
         cv2.imwrite('output.jpg', cv2.cvtColor(np.array(vis), cv2.COLOR_RGB2BGR))
+        
