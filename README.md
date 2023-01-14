@@ -21,7 +21,7 @@ See hsrcnn.py, modify the video path and our program will produce a new video of
 ## Train
 
 ```
-CUDA_VISIBLE_DEVICES=6,7 torchrun --rdzv_backend=c10d --rdzv_endpoint=localhost:0 --nproc_per_node=2 train.py --batch-size 16 --lr 0.01 --weights FasterRCNN_ResNet50_FPN_V2_Weights.DEFAULT --sync-bn --amp --output-dir outputs/ms_bs2x16_syncbn_amp > outputs/bs2x16_syncbn_amp/log.txt
+CUDA_VISIBLE_DEVICES=6,7 torchrun --rdzv_backend=c10d --rdzv_endpoint=localhost:0 --nproc_per_node=2 train.py --batch-size 16 --lr 0.01 --sync-bn --amp --output-dir outputs/ms_bs2x16_syncbn_amp > outputs/bs2x16_syncbn_amp/log.txt
 ```
 
 ## Evaluation
