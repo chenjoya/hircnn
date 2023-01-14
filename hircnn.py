@@ -53,7 +53,8 @@ def visualize(image, boxes, states, scores, font):
     labels = [f'{HandStateRCNN.state2str(state)}: {score.item():.2f}'for state, score in zip(states, scores)]
     colors = [(0, 90, 181) if state == 0 else (220, 50, 32) for state in states]
     image = Image.fromarray(cv2.cvtColor(image, cv2.COLOR_BGR2RGB))
-    return draw_box_masks(image, boxes.round().int().tolist(), labels, colors, font)
+    vis = draw_box_masks(image, boxes.round().int().tolist(), labels, colors, font) 
+    return cv2.cvtColor(np.array(vis), cv2.COLOR_RGB2BGR) # return as input type
 
 # NOTE: usage demo. to detect hand interaction in a video
 if __name__ == '__main__':
@@ -82,7 +83,7 @@ if __name__ == '__main__':
         while ret:
             boxes, states, scores = hircnn(frame)
             vis = visualize(frame, boxes, states, scores, font)
-            writer.write(cv2.cvtColor(np.array(vis), cv2.COLOR_RGB2BGR))
+            writer.write(vis)
             ret, frame = cap.read() 
         writer.release()
         cap.release()

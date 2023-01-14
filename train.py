@@ -144,7 +144,7 @@ def get_args_parser(add_help=True):
     # distributed training parameters
     parser.add_argument("--world-size", default=1, type=int, help="number of distributed processes")
     parser.add_argument("--dist-url", default="env://", type=str, help="url used to set up distributed training")
-    parser.add_argument("--weights", default=None, type=str, help="the weights enum name to load")
+    parser.add_argument("--weights", default='DEFAULT', type=str, help="the weights enum name to load")
     parser.add_argument("--weights-backbone", default=None, type=str, help="the backbone weights enum name to load")
 
     # Mixed precision training parameters

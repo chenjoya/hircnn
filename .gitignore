@@ -4,4 +4,4 @@ __pycache__/
 *.jpg
 outputs/
 *.mp4
-mp4s/
+inputs/

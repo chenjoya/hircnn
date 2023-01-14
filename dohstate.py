@@ -15,7 +15,7 @@ class Pre100DOH(VOCDetection):
         assert self.transforms is None
         targets = self.parse_voc_xml(ET_parse(self.annotations[index]).getroot())
         targets = targets['annotation']['object']
-        boxes, labels = [], []
+        boxes, sides, states = [], [], []
         for t in targets:
             if t['name'] == 'hand':
                 boxes.append([
@@ -24,9 +24,10 @@ class Pre100DOH(VOCDetection):
                     float(t['bndbox']['xmax']),
                     float(t['bndbox']['ymax'])
                 ])
-                labels.append(self.states2binary[int(t['contactstate'])])
+                sides.append(int(t['handside']))
+                states.append(self.states2binary[int(t['contactstate'])])
         image = Image.open(self.images[index])
-        return dict(image=self.images[index], boxes=boxes, labels=labels, height=image.height, width=image.width)
+        return dict(image=self.images[index], boxes=boxes, sides=sides, states=states, height=image.height, width=image.width)
 
 class DOHState(torch.utils.data.Dataset):
     states = [''] + Pre100DOH.binary_states
@@ -38,7 +39,10 @@ class DOHState(torch.utils.data.Dataset):
         anno = self.annos[index]
         image = Image.open(anno['image']).convert("RGB")
         boxes = torch.tensor(anno['boxes'])
-        labels = torch.tensor(anno['labels'], dtype=torch.long) + 1 # no hand as 0
+        # labels: 0 - no hand, 1 - left hand, no contact, 2 - left hand, contact, ...
+        # when learning, it will transfer to 3 classes with binary ce
+        # so clever!
+        labels = 1 + torch.tensor(anno['sides'], dtype=torch.long) * 2 + torch.tensor(anno['states'], dtype=torch.long)
         area = box_area(boxes)
         select = area > 1 # remove small boxes
         targets = dict(
@@ -94,10 +98,10 @@ class DOHState(torch.utils.data.Dataset):
 
 def get_dohstate(root, image_set, transforms, mode="instances"):
     if image_set == "train":
-        dataset = DOHState(os.path.join(root, "hs_100doh+ego_train.json"), transforms)
+        dataset = DOHState(os.path.join(root, "hi_100doh+ego_train.json"), transforms)
     else:
         assert image_set == "test"
-        dataset = DOHState(os.path.join(root, "hs_100doh_test.json"), transforms)
+        dataset = DOHState(os.path.join(root, "hi_100doh_test.json"), transforms)
     return dataset
 
 def prepare():
@@ -118,7 +122,7 @@ def prepare():
     
     print('save them as train split...')
     train_annos = doh_trainval_annos + ego_trainval_annos + ego_test_annos
-    with open('100doh/hs_100doh+ego_train.json', 'w') as f:
+    with open('100doh/hi_100doh+ego_train.json', 'w') as f:
         json.dump(train_annos, f)
     print('done!')
 
@@ -128,7 +132,7 @@ def prepare():
 
     print('save them as test split...')
     test_annos = [doh_test.__getitem__(i) for i in range(len(doh_test))]
-    with open('100doh/hs_100doh_test.json', 'w') as f:
+    with open('100doh/hi_100doh_test.json', 'w') as f:
         json.dump(test_annos, f)
     print('done!')
 
