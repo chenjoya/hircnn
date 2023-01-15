@@ -72,7 +72,7 @@ def get_args_parser(add_help=True):
     parser.add_argument(
         "-b", "--batch-size", default=2, type=int, help="images per gpu, the total batch size is $NGPU x batch_size"
     )
-    parser.add_argument("--epochs", default=26, type=int, metavar="N", help="number of total epochs to run")
+    parser.add_argument("--epochs", default=12, type=int, metavar="N", help="number of total epochs to run")
     parser.add_argument(
         "-j", "--workers", default=4, type=int, metavar="N", help="number of data loading workers (default: 4)"
     )
@@ -104,7 +104,7 @@ def get_args_parser(add_help=True):
     )
     parser.add_argument(
         "--lr-steps",
-        default=[16, 22],
+        default=[8, 11],
         nargs="+",
         type=int,
         help="decrease lr every step-size epochs (multisteplr scheduler only)",
@@ -162,7 +162,7 @@ def get_args_parser(add_help=True):
 
 def main(args):
     if args.output_dir:
-        utils.mkdir(args.output_dir)
+        os.makedirs(args.output_dir, exist_ok=True)
 
     utils.init_distributed_mode(args)
     print(args)

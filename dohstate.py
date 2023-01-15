@@ -42,7 +42,7 @@ class DOHState(torch.utils.data.Dataset):
         # labels: 0 - no hand, 1 - left hand, no contact, 2 - left hand, contact, ...
         # when learning, it will transfer to 3 classes with binary ce
         # so clever!
-        labels = 1 + torch.tensor(anno['sides'], dtype=torch.long) * 2 + torch.tensor(anno['states'], dtype=torch.long)
+        labels = torch.tensor(anno['sides'], dtype=torch.long) + 1#1 + torch.tensor(anno['sides'], dtype=torch.long) * 2 + torch.tensor(anno['states'], dtype=torch.long)
         area = box_area(boxes)
         select = area > 1 # remove small boxes
         targets = dict(
